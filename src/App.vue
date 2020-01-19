@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <header>
-      <h1 class="title">Company Glossary</h1>
+      <h1 class="text-3xl">Company Glossary</h1>
       <AddNew />
       <Search v-model="search.text" />
       <Tags v-if="getTags" :tags="getTags.data" />
