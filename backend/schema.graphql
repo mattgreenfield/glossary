@@ -1,0 +1,16 @@
+type Term {
+  term: String!
+  abbreviation: String
+  description: String!
+  tags: [Tag]
+}
+
+type Tag {
+  title: String!
+  terms: [Term]
+}
+
+type Query {
+  getTerms: [Term]
+  getTags: [Tag]
+}

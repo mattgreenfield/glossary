@@ -1,0 +1,14 @@
+query TermsAll {
+  getTerms {
+    data {
+      _id
+      term
+      description
+      abbreviation
+      tags {
+        _id
+        title
+      }
+    }
+  }
+}
