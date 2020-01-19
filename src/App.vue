@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import gql from "graphql-tag";
 import Search from "./components/Search.vue";
 import AddNew from "./components/AddNew.vue";
