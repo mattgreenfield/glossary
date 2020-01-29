@@ -1,16 +1,17 @@
 type Term {
-  term: String!
-  abbreviation: String
+  term: String! @unique
+  abbreviation: String @unique
   description: String!
-  tags: [Tag]
+  tags: [Tag] @relation
 }
 
 type Tag {
-  title: String!
-  terms: [Term]
+  title: String! @unique
+  terms: [Term] @relation
 }
 
 type Query {
-  getTerms: [Term]
-  getTags: [Tag]
+  allTags: [Tag]
+  allTerms: [Term]
+  # findTermByTag(tag: String): Term
 }

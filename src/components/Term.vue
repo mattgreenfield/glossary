@@ -9,10 +9,11 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import Tags from "./Tags.vue";
 
-export default {
+export default Vue.extend({
   components: {
     Tags
   },
@@ -31,7 +32,7 @@ export default {
       required: false
     }
   }
-};
+});
 </script>
 
 <style>

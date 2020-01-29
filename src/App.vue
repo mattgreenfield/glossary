@@ -2,9 +2,8 @@
   <div class="wrapper">
     <header>
       <h1 class="text-3xl">Company Glossary</h1>
+      <Search v-model="search.text" :selected-tags.sync="search.tags" />
       <AddNew />
-      <Search v-model="search.text" />
-      <Tags v-if="getTags" :tags="getTags.data" />
     </header>
     <main>
       <Terms :search="search" />
@@ -13,51 +12,32 @@
 </template>
 
 <script lang="ts">
-import gql from "graphql-tag";
+import Vue from "vue";
 import Search from "./components/Search.vue";
 import AddNew from "./components/AddNew.vue";
-import Tags from "./components/Tags.vue";
 import Terms from "./components/Terms.vue";
 
-export default {
+export default Vue.extend({
   name: "app",
   components: {
     Search,
-    Tags,
     Terms,
     AddNew
   },
-  data() {
+  data(): any {
     return {
       search: {
         text: "",
         tags: []
       }
     };
-  },
-  apollo: {
-    getTags: gql`
-      query {
-        getTags {
-          data {
-            title
-          }
-        }
-      }
-    `
   }
-};
+});
 </script>
 
 <style>
 .wrapper {
   max-width: 600px;
   margin: 0 auto;
-}
-
-.reset-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }
 </style>

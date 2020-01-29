@@ -1,13 +1,15 @@
 query TermsAll {
-  getTerms {
+  allTerms {
     data {
       _id
       term
       description
       abbreviation
       tags {
-        _id
-        title
+        data {
+          _id
+          title
+        }
       }
     }
   }

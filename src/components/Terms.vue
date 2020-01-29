@@ -1,14 +1,18 @@
 <template>
-  <ol class="reset-list" type="A">
+  <ol type="A">
+    {{
+      search
+    }}
     <li v-for="(letter, key) in sortedList" :key="key" class="letter-group">
       <div class="letter">{{ key }}</div>
-      <ol class="reset-list">
+      <ol>
         <li v-for="term in sortedList[key]" :key="term.term">
           <Term
+            :key="term._id"
             :term="term.term"
             :abbreviation="term.abbreviation"
             :description="term.description"
-            :tags="term.tags"
+            :tags="term.tags.data"
           />
         </li>
       </ol>
@@ -16,11 +20,29 @@
   </ol>
 </template>
 
-<script>
-import Term from "./Term";
-import TERMS_ALL from "../graphql/TermsAll.gql";
+<script lang="ts">
+import Vue, { PropOptions } from "vue";
+import Term from "./Term.vue";
+import TERMS_ALL from "@/graphql/TermsAll.gql";
+import gql from "graphql-tag";
 
-export default {
+interface Term {
+  term: string;
+  abbreviation: string;
+  _id: string;
+  tags: Object;
+}
+
+interface SortedList {
+  [key: string]: Term[];
+}
+
+interface Search {
+  tags: string[];
+  text: string;
+}
+
+export default Vue.extend({
   name: "Terms",
   components: {
     Term
@@ -28,65 +50,73 @@ export default {
   props: {
     search: {
       type: Object
-    }
+    } as PropOptions<Search>
   },
   computed: {
-    sortedList() {
-      if (!this.getTerms) return;
-      const az = [
-        "a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f",
-        "g",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z"
-      ];
+    sortedList(): SortedList {
+      // eslint-disable-next-line
+      // console.log(this.findTagByID.terms.data);
 
-      return az.reduce((acc, letter) => {
-        const terms = this.getTerms.data.filter(
-          ({ term }) => term.charAt(0).toLowerCase() === letter
-        );
+      const { findTagByID, allTerms } = this as any;
+      let data = [];
 
-        if (terms.length) {
-          acc[letter] = terms;
+      if (this.search.tags.length) {
+        data = findTagByID.terms.data;
+      } else {
+        if (allTerms) {
+          data = allTerms.data;
         }
+      }
 
+      return data.reduce((acc: SortedList, term: Term) => {
+        const firstLetter = term.term.charAt(0).toLowerCase();
+        if (acc[firstLetter]) {
+          acc[firstLetter].push(term);
+        } else {
+          acc[firstLetter] = [term];
+        }
         return acc;
       }, {});
     }
   },
   apollo: {
-    getTerms: {
+    allTerms: {
       query: TERMS_ALL,
+      skip() {
+        return !!this.search.tags.length;
+      }
+    },
+    findTagByID: {
+      query: gql`
+        query($tagId: ID!) {
+          findTagByID(id: $tagId) {
+            terms {
+              data {
+                _id
+                term
+                description
+                abbreviation
+                tags {
+                  data {
+                    title
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
       variables() {
         return {
-          search: this.search.text,
-          tags: this.search.tags
+          tagId: this.search.tags[0]
         };
+      },
+      skip() {
+        return !this.search.tags.length;
       }
     }
   }
-};
+});
 </script>
 
 <style>

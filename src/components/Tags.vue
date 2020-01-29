@@ -1,7 +1,13 @@
 <template>
-  <ul class="reset-list tag-list">
+  <ul class="tag-list">
     <li v-for="tag in tags" :key="tag.title">
-      <div>{{ tag.title }}</div>
+      <button
+        class="tag"
+        @click="$emit('tagClicked', tag._id)"
+        :class="{ selected: selectedTags.includes(tag._id) }"
+      >
+        {{ tag.title }}
+      </button>
     </li>
   </ul>
 </template>
@@ -13,6 +19,11 @@ export default {
     tags: {
       type: Array,
       required: true
+    },
+    selectedTags: {
+      type: Array,
+      required: false,
+      default: () => []
     }
   }
 };
@@ -22,5 +33,13 @@ export default {
 .tag-list li {
   margin: 0 4px 4px 0;
   display: inline-block;
+}
+
+.tag {
+  @apply inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2;
+}
+
+.selected {
+  background: red;
 }
 </style>

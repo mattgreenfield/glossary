@@ -1,29 +1,28 @@
 <template>
-  <div>
-    <button type="button" @click="open = !open">Add Term</button>
+  <fieldset class="mb-4">
+    <Button @click="open = !open" class="mb-4">Add New Term</Button>
     <form v-if="open" @submit.prevent="addTerm">
-      <label>
-        Term
-        <input type="text" v-model="newTerm" required />
-      </label>
-      <label>
-        abbreviation
-        <input type="text" v-model="newAbbreviation" required />
-      </label>
-      <label>
-        Description
-        <input type="text" v-model="newDescription" required />
-      </label>
-      <button type="submit">Add Term</button>
+      <TextInput label="Term" v-model="newTerm" required class="mb-2" />
+      <TextInput label="Abbreviation" v-model="newAbbreviation" class="mb-2" />
+      <TextInput
+        label="Description"
+        v-model="newDescription"
+        required
+        class="mb-2"
+      />
+      <Button type="submit">Add</Button>
     </form>
-  </div>
+  </fieldset>
 </template>
 
 <script>
+import Vue from "vue";
 import gql from "graphql-tag";
 import TERMS_ALL from "../graphql/TermsAll.gql";
+import TextInput from "@/components/elements/TextInput.vue";
+import Button from "@/components/elements/Button.vue";
 
-export default {
+export default Vue.extend({
   data() {
     return {
       open: false,
@@ -31,6 +30,10 @@ export default {
       newDescription: "",
       newAbbreviation: ""
     };
+  },
+  components: {
+    Button,
+    TextInput
   },
   methods: {
     addTerm() {
@@ -75,7 +78,7 @@ export default {
             const cache = store.readQuery({ query: TERMS_ALL });
 
             // Add our tag from the mutation to the end
-            cache.getTerms.data.push(createTerm);
+            cache.allTerms.data.push(createTerm);
             // Write our data back to the cache.
             store.writeQuery({ query: TERMS_ALL, data: cache });
             // return null;
@@ -107,7 +110,7 @@ export default {
         });
     }
   }
-};
+});
 </script>
 
 <style lang="scss" scoped></style>
