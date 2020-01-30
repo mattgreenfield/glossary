@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <header>
-      <h1 class="text-3xl">Company Glossary</h1>
+      <h1 class="text-3xl font-bold">Company Glossary</h1>
       <Search v-model="search.text" :selected-tags.sync="search.tags" />
       <AddNew />
     </header>

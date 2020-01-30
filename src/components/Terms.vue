@@ -1,11 +1,10 @@
 <template>
   <ol type="A">
-    {{
-      search
-    }}
-    <li v-for="(letter, key) in sortedList" :key="key" class="letter-group">
-      <div class="letter">{{ key }}</div>
-      <ol>
+    <li v-for="(letter, key) in sortedList" :key="key" class="relative">
+      <div class="text-5xl font-black sticky top-0 -ml-12">
+        {{ key.toUpperCase() }}
+      </div>
+      <ol type="A">
         <li v-for="term in sortedList[key]" :key="term.term">
           <Term
             :key="term._id"
@@ -68,7 +67,7 @@ export default Vue.extend({
         }
       }
 
-      return data.reduce((acc: SortedList, term: Term) => {
+      const groupedByLetter = data.reduce((acc: SortedList, term: Term) => {
         const firstLetter = term.term.charAt(0).toLowerCase();
         if (acc[firstLetter]) {
           acc[firstLetter].push(term);
@@ -76,7 +75,16 @@ export default Vue.extend({
           acc[firstLetter] = [term];
         }
         return acc;
-      }, {});
+      }, {}) as SortedList;
+
+      const ordered = {} as SortedList;
+      Object.keys(groupedByLetter)
+        .sort()
+        .forEach(key => {
+          ordered[key] = groupedByLetter[key];
+        });
+
+      return ordered;
     }
   },
   apollo: {
@@ -118,22 +126,3 @@ export default Vue.extend({
   }
 });
 </script>
-
-<style>
-.terms-list {
-}
-
-.letter-group {
-  display: flex;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-column-gap: 16px;
-}
-
-.letter {
-  font-size: 2em;
-  line-height: 1;
-  text-transform: capitalize;
-  font-weight: bold;
-}
-</style>

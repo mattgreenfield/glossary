@@ -2,33 +2,51 @@
   <fieldset class="mb-4">
     <Button @click="open = !open" class="mb-4">Add New Term</Button>
     <form v-if="open" @submit.prevent="addTerm">
-      <TextInput label="Term" v-model="newTerm" required class="mb-2" />
-      <TextInput label="Abbreviation" v-model="newAbbreviation" class="mb-2" />
+      <TextInput label="Term" v-model="term.term" required class="mb-2" />
+      <TextInput
+        label="Abbreviation"
+        v-model="term.abbreviation"
+        class="mb-2"
+      />
       <TextInput
         label="Description"
-        v-model="newDescription"
+        v-model="term.description"
         required
         class="mb-2"
       />
       <Button type="submit">Add</Button>
+      <span v-if="loading">Loading</span>
     </form>
   </fieldset>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import gql from "graphql-tag";
 import TERMS_ALL from "../graphql/TermsAll.gql";
 import TextInput from "@/components/elements/TextInput.vue";
 import Button from "@/components/elements/Button.vue";
 
+interface Term {
+  term: string;
+  description: string;
+  abbreviation: string;
+  tags: string[];
+}
+
+const blankTerm = {
+  term: "",
+  description: "",
+  abbreviation: "",
+  tags: []
+} as Term;
+
 export default Vue.extend({
   data() {
     return {
       open: false,
-      newTerm: "",
-      newDescription: "",
-      newAbbreviation: ""
+      term: { ...blankTerm },
+      loading: false
     };
   },
   components: {
@@ -36,7 +54,8 @@ export default Vue.extend({
     TextInput
   },
   methods: {
-    addTerm() {
+    addTerm(): void {
+      this.loading = true;
       this.$apollo
         .mutate({
           // Query
@@ -45,12 +64,14 @@ export default Vue.extend({
               $term: String!
               $description: String!
               $abbreviation: String
+              $tags: [ID]
             ) {
               createTerm(
                 data: {
                   term: $term
                   description: $description
                   abbreviation: $abbreviation
+                  tags: { connect: $tags }
                 }
               ) {
                 _id
@@ -58,24 +79,28 @@ export default Vue.extend({
                 description
                 abbreviation
                 tags {
-                  title
+                  data {
+                    title
+                  }
                 }
               }
             }
           `,
           // Parameters
           variables: {
-            abbreviation: this.newAbbreviation,
-            term: this.newTerm,
-            description: this.newDescription
+            abbreviation: this.term.abbreviation || null,
+            term: this.term.term,
+            description: this.term.description,
+            tags: this.term.tags
           },
 
           // Update the cache with the result
           // The query will be updated with the optimistic response
           // and then with the real result of the mutation
-          update: (store, { data: { createTerm } }) => {
+          update: (store, { data }) => {
+            const createTerm = data!.createTerm;
             // Read the data from our cache for this query.
-            const cache = store.readQuery({ query: TERMS_ALL });
+            const cache = store.readQuery({ query: TERMS_ALL }) as any;
 
             // Add our tag from the mutation to the end
             cache.allTerms.data.push(createTerm);
@@ -91,10 +116,10 @@ export default Vue.extend({
             createTerm: {
               __typename: "Term",
               _id: -1,
-              abbreviation: this.newAbbreviation,
-              term: this.newTerm,
-              description: this.newDescription,
-              tags: []
+              abbreviation: this.term.abbreviation,
+              term: this.term.term,
+              description: this.term.description,
+              tags: this.term.tags
             }
           }
         })
@@ -102,15 +127,17 @@ export default Vue.extend({
           // Result
           // eslint-disable-next-line
           console.log(data);
+          this.term = { ...blankTerm };
         })
         .catch(error => {
           // Error
           // eslint-disable-next-line
           console.error(error);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     }
   }
 });
 </script>
-
-<style lang="scss" scoped></style>

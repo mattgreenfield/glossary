@@ -1,11 +1,11 @@
 <template>
-  <section class="term">
-    <h3 class="term__heading">
+  <section class="border-solid border-gray-400 border p-4 mb-4 rounded-lg">
+    <h3 class="text-xl font-bold">
       <span v-if="abbreviation">({{ abbreviation }})</span>
       {{ term }}
     </h3>
-    <p>{{ description }}</p>
-    <Tags :tags="tags" />
+    <p class="mb-2">{{ description }}</p>
+    <Tags class="-m-1" v-if="tags && tags.length" :tags="tags" />
   </section>
 </template>
 
@@ -34,16 +34,3 @@ export default Vue.extend({
   }
 });
 </script>
-
-<style>
-.term {
-  border-bottom: 1px solid;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-}
-
-.term__heading {
-  font-weight: bold;
-  font-size: 1.2em;
-}
-</style>
