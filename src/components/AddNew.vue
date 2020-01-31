@@ -19,6 +19,9 @@
         :selectedTags="term.tags"
         @tagClicked="handleTagClick($event)"
       />
+
+      <v-select v-model="term.tags" :options="['Vue.js', 'React']"></v-select>
+
       <Button type="submit">Add</Button>
       <span v-if="loading">Loading</span>
     </form>
@@ -33,6 +36,8 @@ import TAGS_ALL from "@/graphql/TagsAll.gql";
 import TextInput from "@/components/elements/TextInput.vue";
 import Button from "@/components/elements/Button.vue";
 import Tags from "@/components/Tags.vue";
+
+import vSelect from "vue-select";
 
 interface Term {
   term: string;
@@ -59,7 +64,8 @@ export default Vue.extend({
   components: {
     Button,
     TextInput,
-    Tags
+    Tags,
+    vSelect
   },
   methods: {
     addTerm(): void {
@@ -163,3 +169,12 @@ export default Vue.extend({
   }
 });
 </script>
+
+<style lang="scss">
+@import "vue-select/src/scss/vue-select.scss";
+
+.vs__search {
+  /* TODO: Same as .text-input , hmmmm..... */
+  @apply bg-white border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal;
+}
+</style>
