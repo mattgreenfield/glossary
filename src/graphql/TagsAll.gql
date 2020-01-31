@@ -1,0 +1,8 @@
+query TagsAll {
+    allTags {
+        data {
+            _id
+            title
+        }
+    }
+}

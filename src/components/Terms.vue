@@ -59,7 +59,7 @@ export default Vue.extend({
       const { findTagByID, allTerms } = this as any;
       let data = [];
 
-      if (this.search.tags.length) {
+      if (this.search.tags.length && findTagByID && findTagByID.terms.data) {
         data = findTagByID.terms.data;
       } else {
         if (allTerms) {

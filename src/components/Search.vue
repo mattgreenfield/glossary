@@ -13,6 +13,7 @@
 <script lang="ts">
 import Vue, { PropOptions } from "vue";
 import gql from "graphql-tag";
+import TAGS_ALL from "@/graphql/TagsAll.gql";
 import Tags from "@/components/Tags.vue";
 import TextInput from "@/components/elements/TextInput.vue";
 
@@ -70,18 +71,9 @@ export default Vue.extend({
     }
   },
   apollo: {
-    allTags: gql`
-      query {
-        allTags {
-          data {
-            title
-            _id
-          }
-        }
-      }
-    `
+    allTags: {
+      query: TAGS_ALL
+    }
   }
 });
 </script>
-
-<style scoped></style>

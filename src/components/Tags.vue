@@ -2,6 +2,7 @@
   <ul class="tag-list">
     <li v-for="tag in tags" :key="tag.title">
       <button
+        type="button"
         class="tag"
         @click="$emit('tagClicked', tag._id)"
         :class="{ selected: selectedTags.includes(tag._id) }"

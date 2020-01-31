@@ -14,6 +14,11 @@
         required
         class="mb-2"
       />
+      <Tags
+        :tags="allTags.data"
+        :selectedTags="term.tags"
+        @tagClicked="handleTagClick($event)"
+      />
       <Button type="submit">Add</Button>
       <span v-if="loading">Loading</span>
     </form>
@@ -24,8 +29,10 @@
 import Vue from "vue";
 import gql from "graphql-tag";
 import TERMS_ALL from "../graphql/TermsAll.gql";
+import TAGS_ALL from "@/graphql/TagsAll.gql";
 import TextInput from "@/components/elements/TextInput.vue";
 import Button from "@/components/elements/Button.vue";
+import Tags from "@/components/Tags.vue";
 
 interface Term {
   term: string;
@@ -51,7 +58,8 @@ export default Vue.extend({
   },
   components: {
     Button,
-    TextInput
+    TextInput,
+    Tags
   },
   methods: {
     addTerm(): void {
@@ -137,6 +145,20 @@ export default Vue.extend({
         .finally(() => {
           this.loading = false;
         });
+    },
+    handleTagClick(tagId: string) {
+      const existingIndex = this.term.tags.findIndex(id => id === tagId);
+
+      if (existingIndex >= 0) {
+        this.term.tags.splice(existingIndex, 1);
+      } else {
+        this.term.tags.push(tagId);
+      }
+    }
+  },
+  apollo: {
+    allTags: {
+      query: TAGS_ALL
     }
   }
 });
