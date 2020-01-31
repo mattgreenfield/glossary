@@ -5,9 +5,12 @@
       <Search v-model="search.text" :selected-tags.sync="search.tags" />
       <AddNew />
     </header>
-    <main>
+    <main class="mb-16">
       <Terms :search="search" />
     </main>
+    <footer class="text-right mb-4">
+      <a href="">View the source</a>
+    </footer>
   </div>
 </template>
 
