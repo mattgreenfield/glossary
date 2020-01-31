@@ -1,21 +1,25 @@
 <template>
   <ul class="tag-list">
-    <li v-for="tag in tags" :key="tag.title">
-      <button
-        type="button"
-        class="tag"
+    <li v-for="tag in tags" :key="tag.title" class="inline-block mx-1">
+      <Tag
+        :id="tag._id"
+        :title="tag.title"
+        :selected="selectedTags.includes(tag._id)"
         @click="$emit('tagClicked', tag._id)"
-        :class="{ selected: selectedTags.includes(tag._id) }"
-      >
-        {{ tag.title }}
-      </button>
+      />
     </li>
   </ul>
 </template>
 
 <script>
-export default {
-  name: "Tags",
+import Vue from "vue";
+import Tag from "@/components/elements/Tag.vue";
+
+export default Vue.extend({
+  name: "TagsList",
+  components: {
+    Tag
+  },
   props: {
     tags: {
       type: Array,
@@ -27,15 +31,10 @@ export default {
       default: () => []
     }
   }
-};
+});
 </script>
 
 <style>
-.tag-list li {
-  margin: 0 4px 4px 0;
-  display: inline-block;
-}
-
 .tag {
   @apply inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2;
 }

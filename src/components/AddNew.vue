@@ -3,25 +3,9 @@
     <Button @click="open = !open" class="mb-4">Add New Term</Button>
     <form v-if="open" @submit.prevent="addTerm">
       <TextInput label="Term" v-model="term.term" required class="mb-2" />
-      <TextInput
-        label="Abbreviation"
-        v-model="term.abbreviation"
-        class="mb-2"
-      />
-      <TextInput
-        label="Description"
-        v-model="term.description"
-        required
-        class="mb-2"
-      />
-      <Tags
-        :tags="allTags.data"
-        :selectedTags="term.tags"
-        @tagClicked="handleTagClick($event)"
-      />
-
-      <v-select v-model="term.tags" :options="['Vue.js', 'React']"></v-select>
-
+      <TextInput label="Abbreviation" v-model="term.abbreviation" class="mb-2" />
+      <TextInput label="Description" v-model="term.description" required class="mb-2" />
+      <TagSelector label="Tags" v-model="newTags" :allTags="allTags.data" />
       <Button type="submit">Add</Button>
       <span v-if="loading">Loading</span>
     </form>
@@ -35,15 +19,18 @@ import TERMS_ALL from "../graphql/TermsAll.gql";
 import TAGS_ALL from "@/graphql/TagsAll.gql";
 import TextInput from "@/components/elements/TextInput.vue";
 import Button from "@/components/elements/Button.vue";
-import Tags from "@/components/Tags.vue";
-
-import vSelect from "vue-select";
+import TagSelector from "@/components/elements/TagSelector.vue";
 
 interface Term {
   term: string;
   description: string;
   abbreviation: string;
   tags: string[];
+}
+
+interface Tag {
+  title: string;
+  _id: string;
 }
 
 const blankTerm = {
@@ -54,7 +41,7 @@ const blankTerm = {
 } as Term;
 
 export default Vue.extend({
-  data() {
+  data(): any {
     return {
       open: false,
       term: { ...blankTerm },
@@ -64,8 +51,19 @@ export default Vue.extend({
   components: {
     Button,
     TextInput,
-    Tags,
-    vSelect
+    TagSelector
+  },
+  computed: {
+    newTags: {
+      get(): Tag[] {
+        const allTags = this.allTags.data as Tag[];
+        if (!allTags) return [];
+        return allTags.filter(({ _id }) => this.term.tags.includes(_id));
+      },
+      set(val: Tag[]): void {
+        this.term.tags = val.map(tag => tag._id);
+      }
+    }
   },
   methods: {
     addTerm(): void {
@@ -151,15 +149,6 @@ export default Vue.extend({
         .finally(() => {
           this.loading = false;
         });
-    },
-    handleTagClick(tagId: string) {
-      const existingIndex = this.term.tags.findIndex(id => id === tagId);
-
-      if (existingIndex >= 0) {
-        this.term.tags.splice(existingIndex, 1);
-      } else {
-        this.term.tags.push(tagId);
-      }
     }
   },
   apollo: {
@@ -169,12 +158,3 @@ export default Vue.extend({
   }
 });
 </script>
-
-<style lang="scss">
-@import "vue-select/src/scss/vue-select.scss";
-
-.vs__search {
-  /* TODO: Same as .text-input , hmmmm..... */
-  @apply bg-white border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal;
-}
-</style>
