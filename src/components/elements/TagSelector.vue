@@ -2,7 +2,9 @@
   <label>
     {{ label }}
     <v-select v-model="localValue" :options="options" multiple taggable>
-      <template v-slot:selected-option-container="{ option: { label, id }, deselect }">
+      <template
+        v-slot:selected-option-container="{ option: { label, id }, deselect }"
+      >
         <div>
           <Tag :id="id" :title="label" />
           <button type="button" @click="deselect(label)">X</button>

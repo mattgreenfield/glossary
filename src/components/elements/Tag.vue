@@ -4,7 +4,9 @@
     class="tag"
     :class="{ selected: selected }"
     @click="$emit('tagClicked', id)"
-  >{{ title }}</button>
+  >
+    {{ title }}
+  </button>
 </template>
 
 <script>

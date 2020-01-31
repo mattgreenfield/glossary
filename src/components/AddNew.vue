@@ -3,8 +3,17 @@
     <Button @click="open = !open" class="mb-4">Add New Term</Button>
     <form v-if="open" @submit.prevent="addTerm">
       <TextInput label="Term" v-model="term.term" required class="mb-2" />
-      <TextInput label="Abbreviation" v-model="term.abbreviation" class="mb-2" />
-      <TextInput label="Description" v-model="term.description" required class="mb-2" />
+      <TextInput
+        label="Abbreviation"
+        v-model="term.abbreviation"
+        class="mb-2"
+      />
+      <TextInput
+        label="Description"
+        v-model="term.description"
+        required
+        class="mb-2"
+      />
       <TagSelector label="Tags" v-model="newTags" :allTags="allTags.data" />
       <Button type="submit">Add</Button>
       <span v-if="loading">Loading</span>
@@ -20,6 +29,17 @@ import TAGS_ALL from "@/graphql/TagsAll.gql";
 import TextInput from "@/components/elements/TextInput.vue";
 import Button from "@/components/elements/Button.vue";
 import TagSelector from "@/components/elements/TagSelector.vue";
+
+import {
+  ApolloClient,
+  ObservableQuery,
+  ApolloQueryResult,
+  QueryOptions,
+  WatchQueryOptions,
+  MutationOptions,
+  SubscriptionOptions,
+  OperationVariables
+} from "apollo-client";
 
 interface Term {
   term: string;
@@ -41,7 +61,7 @@ const blankTerm = {
 } as Term;
 
 export default Vue.extend({
-  data(): any {
+  data() {
     return {
       open: false,
       term: { ...blankTerm },
@@ -56,7 +76,7 @@ export default Vue.extend({
   computed: {
     newTags: {
       get(): Tag[] {
-        const allTags = this.allTags.data as Tag[];
+        const allTags = (this as any).allTags.data as Tag[];
         if (!allTags) return [];
         return allTags.filter(({ _id }) => this.term.tags.includes(_id));
       },

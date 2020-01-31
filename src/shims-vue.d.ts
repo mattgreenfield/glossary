@@ -4,3 +4,4 @@ declare module "*.vue" {
 }
 
 declare module "vue-cli-plugin-apollo/graphql-client";
+declare module "vue-select";
